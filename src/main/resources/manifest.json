@@ -1,0 +1,18 @@
+{
+  "Group": "Jemsire",
+  "Name": "JemDeaths",
+  "Version": "1.0.0",
+  "Description": "Display death messages and position in chat when players die.",
+  "Authors": [
+    {
+      "Name": "TinyTank800"
+    }
+  ],
+  "Website": "https://www.curseforge.com/members/jemsire/projects",
+  "ServerVersion": "*",
+  "Dependencies": {},
+  "OptionalDependencies": {},
+  "DisabledByDefault": false,
+  "IncludesAssetPack": true,
+  "Main": "com.jemsire.plugin.JemDeaths"
+}
