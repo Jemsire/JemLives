@@ -32,8 +32,8 @@ After first launch, a configuration file will be created at `Jemsire_JemDeaths/D
 {
   "ShowDeathMessage": true,
   "ShowPosition": true,
-  "DeathAnnouncementFormat": "{player} {deathCause}",
-  "DeathLocationFormat": "You last death position: {position}",
+  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
+  "DeathLocationFormat": "<gold>You last death position: {position}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -52,13 +52,43 @@ After first launch, a configuration file will be created at `Jemsire_JemDeaths/D
   - Supports placeholders: `{player}`, `{playerName}`, `{deathCause}`, `{rawDeathCause}`, `{position}`, `{x}`, `{y}`, `{z}`
   - Example: `"[DEATH] {player} died: {deathCause}"` or `"Cant believe {player} {deathCause}"`
 
-- **DeathLocationFormat** (default: `"You last death position: {position}"`): Customize the format of the death location message sent to the player
+- **DeathLocationFormat** (default: `"<gold>You last death position: {position}"`): Customize the format of the death location message sent to the player
   - Supports placeholders: `{player}`, `{playerName}`, `{deathCause}`, `{rawDeathCause}`, `{position}`, `{x}`, `{y}`, `{z}`
   - Example: `"Your death location: {x}, {y}, {z}"` or `"Died at: {position}"`
 
 - **DeathCauseReplacement** (default: `"was"`): What to replace "You were" with in the death cause
   - The game's death message typically starts with "You were", this setting replaces it
   - Example: `"was"` (default), `"got"`, `"perished from"`, etc.
+
+### Color Formatting
+
+Both `DeathAnnouncementFormat` and `DeathLocationFormat` support **color formatting** using tags or legacy color codes. The plugin will automatically detect and apply colors if present.
+
+**Supported Color Formats:**
+- **Named Color Tags**: `<red>`, `<blue>`, `<green>`, `<yellow>`, `<gold>`, etc.
+- **Hex Color Tags**: `<#FF0000>` for custom colors
+- **Legacy Color Codes**: `&a`, `&c`, `&e`, etc. (Minecraft/Hytale style)
+
+**Available Named Colors:**
+- `black`, `dark_blue`, `dark_green`, `dark_aqua`, `dark_red`, `dark_purple`
+- `gold`, `gray`, `dark_gray`, `blue`, `green`, `aqua`
+- `red`, `light_purple`, `yellow`, `white`
+
+**Examples:**
+```json
+{
+  "DeathAnnouncementFormat": "<red>{player} <gray>{deathCause}</gray>",
+  "DeathLocationFormat": "<gold>You last death position: <#00FF00>{position}</#00FF00>"
+}
+```
+
+Or using legacy codes:
+```json
+{
+  "DeathAnnouncementFormat": "&c{player} &7{deathCause}",
+  "DeathLocationFormat": "&6You last death position: &a{position}"
+}
+```
 
 ### Available Placeholders
 
@@ -79,8 +109,8 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
 {
   "ShowDeathMessage": true,
   "ShowPosition": true,
-  "DeathAnnouncementFormat": "{player} {deathCause}",
-  "DeathLocationFormat": "You last death position: {position}",
+  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
+  "DeathLocationFormat": "<gold>You last death position: {position}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -101,8 +131,8 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
 {
   "ShowDeathMessage": false,
   "ShowPosition": true,
-  "DeathAnnouncementFormat": "{player} {deathCause}",
-  "DeathLocationFormat": "You last death position: {position}",
+  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
+  "DeathLocationFormat": "<gold>You last death position: {position}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -112,8 +142,8 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
 {
   "ShowDeathMessage": true,
   "ShowPosition": false,
-  "DeathAnnouncementFormat": "{player} {deathCause}",
-  "DeathLocationFormat": "You last death position: {position}",
+  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
+  "DeathLocationFormat": "<gold>You last death position: {position}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -123,8 +153,8 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
 {
   "ShowDeathMessage": false,
   "ShowPosition": false,
-  "DeathAnnouncementFormat": "{player} {deathCause}",
-  "DeathLocationFormat": "You last death position: {position}",
+  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
+  "DeathLocationFormat": "<gold>You last death position: {position}",
   "DeathCauseReplacement": "was"
 }
 ```

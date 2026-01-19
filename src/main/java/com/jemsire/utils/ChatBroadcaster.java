@@ -9,6 +9,7 @@ import java.awt.*;
 
 /**
  * Utility class for broadcasting messages to players in chat.
+ * Supports both plain text and color formatting (tags and legacy codes).
  */
 public class ChatBroadcaster {
     
@@ -30,7 +31,11 @@ public class ChatBroadcaster {
                 return;
             }
             
-            Message msg = Message.raw(message);
+            // Format message with colors if tags/codes are present, otherwise use plain text
+            Message msg = (MessageFormatter.containsColorTags(message) || message.contains("&"))
+                ? MessageFormatter.format(message)
+                : Message.raw(message);
+            
             universe.getPlayers().forEach(playerRef -> {
                 try {
                     playerRef.sendMessage(msg);
@@ -55,7 +60,11 @@ public class ChatBroadcaster {
                 return;
             }
             
-            Message msg = Message.raw(message);
+            // Format message with colors if tags/codes are present, otherwise use plain text
+            Message msg = (MessageFormatter.containsColorTags(message) || message.contains("&"))
+                ? MessageFormatter.format(message)
+                : Message.raw(message);
+            
             playerRef.sendMessage(msg);
         } catch (Exception e) {
             Logger.severe("Failed to send message to player", e);

@@ -10,8 +10,8 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 public class DeathConfig {
     private boolean showDeathMessage = true;
     private boolean showPosition = true;
-    private String deathAnnouncementFormat = "{player} {deathCause}";
-    private String deathLocationFormat = "You last death position: {position}";
+    private String deathAnnouncementFormat = "<red>{player} {deathCause}";
+    private String deathLocationFormat = "<gold>You last death position: <white>X:{x} Y:{y} Z:{z}";
     private String deathCauseReplacement = "was";
 
     public DeathConfig() {
@@ -35,14 +35,14 @@ public class DeathConfig {
 
                     .append(
                             new KeyedCodec<String>("DeathAnnouncementFormat", Codec.STRING),
-                            (config, value, info) -> config.deathAnnouncementFormat = value != null && !value.isEmpty() ? value : "{player} {deathCause}",
+                            (config, value, info) -> config.deathAnnouncementFormat = value != null && !value.isEmpty() ? value : "<red>{player} {deathCause}",
                             (config, info) -> config.deathAnnouncementFormat
                     )
                     .add()
 
                     .append(
                             new KeyedCodec<String>("DeathLocationFormat", Codec.STRING),
-                            (config, value, info) -> config.deathLocationFormat = value != null && !value.isEmpty() ? value : "You last death position: {position}",
+                            (config, value, info) -> config.deathLocationFormat = value != null && !value.isEmpty() ? value : "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
                             (config, info) -> config.deathLocationFormat
                     )
                     .add()
