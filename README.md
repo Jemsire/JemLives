@@ -33,7 +33,7 @@ After first launch, a configuration file will be created at `Jemsire_JemDeaths/D
   "ShowDeathMessage": true,
   "ShowPosition": true,
   "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>You last death position: {position}",
+  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -52,7 +52,7 @@ After first launch, a configuration file will be created at `Jemsire_JemDeaths/D
   - Supports placeholders: `{player}`, `{playerName}`, `{deathCause}`, `{rawDeathCause}`, `{position}`, `{x}`, `{y}`, `{z}`
   - Example: `"[DEATH] {player} died: {deathCause}"` or `"Cant believe {player} {deathCause}"`
 
-- **DeathLocationFormat** (default: `"<gold>You last death position: {position}"`): Customize the format of the death location message sent to the player
+- **DeathLocationFormat** (default: `"<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}"`): Customize the format of the death location message sent to the player
   - Supports placeholders: `{player}`, `{playerName}`, `{deathCause}`, `{rawDeathCause}`, `{position}`, `{x}`, `{y}`, `{z}`
   - Example: `"Your death location: {x}, {y}, {z}"` or `"Died at: {position}"`
 
@@ -78,7 +78,7 @@ Both `DeathAnnouncementFormat` and `DeathLocationFormat` support **color formatt
 ```json
 {
   "DeathAnnouncementFormat": "<red>{player} <gray>{deathCause}</gray>",
-  "DeathLocationFormat": "<gold>You last death position: <#00FF00>{position}</#00FF00>"
+  "DeathLocationFormat": "<gold>Your last death position: <#00FF00>X:{x} Y:{y} Z:{z}</#00FF00>"
 }
 ```
 
@@ -86,7 +86,7 @@ Or using legacy codes:
 ```json
 {
   "DeathAnnouncementFormat": "&c{player} &7{deathCause}",
-  "DeathLocationFormat": "&6You last death position: &a{position}"
+  "DeathLocationFormat": "&6Your last death position: &aX:{x} Y:{y} Z:{z}"
 }
 ```
 
@@ -110,7 +110,7 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
   "ShowDeathMessage": true,
   "ShowPosition": true,
   "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>You last death position: {position}",
+  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -132,7 +132,7 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
   "ShowDeathMessage": false,
   "ShowPosition": true,
   "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>You last death position: {position}",
+  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -143,7 +143,7 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
   "ShowDeathMessage": true,
   "ShowPosition": false,
   "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>You last death position: {position}",
+  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -154,7 +154,7 @@ Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFor
   "ShowDeathMessage": false,
   "ShowPosition": false,
   "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>You last death position: {position}",
+  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
   "DeathCauseReplacement": "was"
 }
 ```
@@ -174,11 +174,11 @@ You can customize this format using the `DeathAnnouncementFormat` option with pl
 
 ### Death Position Notification
 
-After a player dies, they receive a private message with their death coordinates using the configured format (default: `"You last death position: {position}"`).
+After a player dies, they receive a private message with their death coordinates using the configured format (default: `"<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}"`).
 
 Example with default settings:
 ```
-You last death position: 123.4, 64.0, -567.8
+Your last death position: X:123.4 Y:64.0 Z:-567.8
 ```
 
 You can customize this format using the `DeathLocationFormat` option with placeholders. This helps players find their death location to retrieve items.
@@ -212,7 +212,10 @@ JemDeaths/
 │   │   └── JemDeaths.java               # Main plugin class
 │   └── utils/
 │       ├── ChatBroadcaster.java         # Utility for broadcasting messages
-│       └── Logger.java                  # Logging utility
+│       ├── ColorUtils.java               # Color code parsing and conversion utilities
+│       ├── Logger.java                   # Logging utility
+│       ├── MessageFormatter.java         # Message formatting with color tag support
+│       └── PlaceholderReplacer.java      # Placeholder replacement utility
 ├── src/main/resources/
 │   └── manifest.json                    # Plugin metadata
 ├── build.gradle.kts                     # Gradle build configuration
@@ -266,7 +269,7 @@ JemDeaths/
 
 ### Death Messages Not Appearing
 
-1. **Check Configuration**: Verify that `ShowInChat` is set to `true` in `DeathConfig.json`
+1. **Check Configuration**: Verify that `ShowDeathMessage` is set to `true` in `DeathConfig.json`
 2. **Reload Config**: Use `/jemdeaths-reload` after making changes
 3. **Check Server Logs**: Look for error messages in the server console
 4. **Verify Permissions**: Ensure players have permission to receive chat messages
