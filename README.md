@@ -1,5 +1,11 @@
 # JemDeaths
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Jemsire/JemDeaths)
+![GitHub stars](https://img.shields.io/github/stars/Jemsire/JemDeaths?style=social)
+![GitHub issues](https://img.shields.io/github/issues/Jemsire/JemDeaths)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Jemsire/JemDeaths)
+![GitHub license](https://img.shields.io/github/license/Jemsire/JemDeaths)
+
 A Hytale server plugin that displays death messages in chat when players die. The plugin broadcasts death information to all players (or just the deceased player) and sends the death position to the player who died.
 
 ## Features
@@ -146,6 +152,14 @@ You last death position: 123.4, 64.0, -567.8
 ```
 
 You can customize this format using the `DeathLocationFormat` option with placeholders. This helps players find their death location to retrieve items.
+
+## Screenshots
+
+### Configuration File
+![Configuration File](assets/images/ConfigFile.png)
+
+### In-Game Chat Example
+![Chat Example](assets/images/ChatExample.png)
 
 ## Commands
 
