@@ -62,17 +62,23 @@ After first launch, a configuration file will be created at `Jemsire_JemDeaths/D
 
 ### Color Formatting
 
-Both `DeathAnnouncementFormat` and `DeathLocationFormat` support **color formatting** using tags or legacy color codes. The plugin will automatically detect and apply colors if present.
+Both `DeathAnnouncementFormat` and `DeathLocationFormat` support **advanced color formatting** using tags or legacy color codes. The plugin uses TinyMsg for rich text formatting with colors, gradients, styles, and links.
 
 **Supported Color Formats:**
 - **Named Color Tags**: `<red>`, `<blue>`, `<green>`, `<yellow>`, `<gold>`, etc.
-- **Hex Color Tags**: `<#FF0000>` for custom colors
+- **Hex Color Tags**: `<color:#FF0000>` or `<#FF0000>` for custom colors
 - **Legacy Color Codes**: `&a`, `&c`, `&e`, etc. (Minecraft/Hytale style)
 
 **Available Named Colors:**
 - `black`, `dark_blue`, `dark_green`, `dark_aqua`, `dark_red`, `dark_purple`
 - `gold`, `gray`, `dark_gray`, `blue`, `green`, `aqua`
 - `red`, `light_purple`, `yellow`, `white`
+
+**Advanced Formatting Features:**
+- **Gradients**: `<gradient:#FF0000:#00FF00>Rainbow text</gradient>`
+- **Text Styles**: `<bold>`, `<italic>`, `<underline>`, `<monospace>`
+- **Links**: `<link:https://example.com>Click me</link>`
+- **Combined**: `<bold><red>Bold Red Text</red></bold>`
 
 **Examples:**
 ```json
@@ -87,6 +93,14 @@ Or using legacy codes:
 {
   "DeathAnnouncementFormat": "&c{player} &7{deathCause}",
   "DeathLocationFormat": "&6Your last death position: &aX:{x} Y:{y} Z:{z}"
+}
+```
+
+Advanced example with gradients and styles:
+```json
+{
+  "DeathAnnouncementFormat": "<bold><gradient:#FF0000:#00FF00>{player}</gradient></bold> <italic>{deathCause}</italic>",
+  "DeathLocationFormat": "<gold><bold>Your last death position:</bold> <underline>X:{x} Y:{y} Z:{z}</underline></gold>"
 }
 ```
 
@@ -214,7 +228,7 @@ JemDeaths/
 │       ├── ChatBroadcaster.java         # Utility for broadcasting messages
 │       ├── ColorUtils.java               # Color code parsing and conversion utilities
 │       ├── Logger.java                   # Logging utility
-│       ├── MessageFormatter.java         # Message formatting with color tag support
+│       ├── TinyMsg.java                  # Advanced message formatting with colors, gradients, styles, and links
 │       └── PlaceholderReplacer.java      # Placeholder replacement utility
 ├── src/main/resources/
 │   └── manifest.json                    # Plugin metadata

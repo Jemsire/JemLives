@@ -32,8 +32,8 @@ public class ChatBroadcaster {
             }
             
             // Format message with colors if tags/codes are present, otherwise use plain text
-            Message msg = (MessageFormatter.containsColorTags(message) || message.contains("&"))
-                ? MessageFormatter.format(message)
+            Message msg = (TinyMsg.containsColorTags(message) || message.contains("&"))
+                ? TinyMsg.format(message)
                 : Message.raw(message);
             
             universe.getPlayers().forEach(playerRef -> {
@@ -61,8 +61,8 @@ public class ChatBroadcaster {
             }
             
             // Format message with colors if tags/codes are present, otherwise use plain text
-            Message msg = (MessageFormatter.containsColorTags(message) || message.contains("&"))
-                ? MessageFormatter.format(message)
+            Message msg = (TinyMsg.containsColorTags(message) || message.contains("&"))
+                ? TinyMsg.format(message)
                 : Message.raw(message);
             
             playerRef.sendMessage(msg);

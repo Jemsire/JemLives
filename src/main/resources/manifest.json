@@ -1,8 +1,8 @@
 {
   "Group": "Jemsire",
   "Name": "JemDeaths",
-  "Version": "1.0.0",
-  "Description": "Display death messages and position in chat when players die.",
+  "Version": "1.0.1",
+  "Description": "Display death messages and position to player in chat when players die.",
   "Authors": [
     {
       "Name": "TinyTank800"
