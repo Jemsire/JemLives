@@ -11,7 +11,7 @@ public class DeathConfig {
     private boolean showDeathMessage = true;
     private boolean showPosition = true;
     private String deathAnnouncementFormat = "<red>{player} {deathCause}";
-    private String deathLocationFormat = "<gold>You last death position: <white>X:{x} Y:{y} Z:{z}";
+    private String deathLocationFormat = "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}";
     private String deathCauseReplacement = "was";
 
     public DeathConfig() {

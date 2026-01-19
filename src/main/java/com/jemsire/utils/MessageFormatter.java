@@ -3,6 +3,8 @@ package com.jemsire.utils;
 import com.hypixel.hytale.server.core.Message;
 
 import java.awt.Color;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,14 +17,39 @@ import java.util.regex.Pattern;
  * - <red>text</red> - Named colors
  * - <#FF0000>text</#FF0000> - Hex colors
  * - &atext - Legacy color codes
+ * 
+ * Uses Message.empty() and Message.insert() to support multiple colors in a single message.
  */
 public class MessageFormatter {
-    // Pattern for color tags: <tag> or <tag:arg>
-    private static final Pattern TAG_PATTERN = Pattern.compile("<([^>]+)>");
+    // Matches <tag>, <tag:arg>, </tag>
+    private static final Pattern TAG_PATTERN = Pattern.compile("<(/?)([a-zA-Z0-9_#]+)(?::([^>]+))?>");
+    
+    /**
+     * Simple state record to track color styling.
+     */
+    private static class ColorState {
+        final Color color;
+        
+        ColorState() {
+            this(null);
+        }
+        
+        ColorState(Color color) {
+            this.color = color;
+        }
+        
+        ColorState withColor(Color color) {
+            return new ColorState(color);
+        }
+        
+        ColorState copy() {
+            return new ColorState(color);
+        }
+    }
     
     /**
      * Formats a message string and creates a Hytale Message object.
-     * Extracts color information from tags/codes and applies it to the message.
+     * Supports multiple colors by creating separate message segments and inserting them into a container.
      * 
      * @param message The message string with formatting
      * @return A Message object with formatting applied, or plain text if parsing fails
@@ -32,73 +59,233 @@ public class MessageFormatter {
             return Message.raw("");
         }
         
-        // First, check if it contains legacy & color codes
+        // If it already contains legacy & codes, convert them to tags first
         if (message.contains("&") && hasLegacyColorCodes(message)) {
-            return parseLegacyColorCodes(message);
+            message = convertLegacyCodesToTags(message);
         }
         
         // Check if it contains color tags
-        if (!containsColorTags(message)) {
+        if (!message.contains("<")) {
             return Message.raw(message);
         }
         
         try {
-            // Extract text and color from tags
-            String plainText = stripTags(message);
-            Color color = extractColorFromTags(message);
-            
-            Message formattedMessage = Message.raw(plainText);
-            
-            // Apply color if found
-            if (color != null) {
-                try {
-                    formattedMessage = formattedMessage.color(color);
-                } catch (Exception e) {
-                    Logger.warning("Failed to apply color to message: " + e.getMessage());
-                }
-            }
-            
-            return formattedMessage;
-            
+            return parse(message);
         } catch (Exception e) {
-            Logger.warning("Failed to format message, falling back to plain text: " + e.getMessage());
+            String errorMsg = e.getMessage();
+            if (errorMsg == null) {
+                errorMsg = e.getClass().getSimpleName();
+            }
+            Logger.warning("Failed to format message, falling back to plain text: " + errorMsg);
             // Fallback: strip tags and return plain text
             return Message.raw(stripTags(message));
         }
     }
     
     /**
-     * Extracts color information from color tags.
+     * Parses a string containing color formatting tags and converts it into a Hytale Message.
      * 
-     * @param text The text with color tags
-     * @return Color object if found, null otherwise
+     * @param text The string to parse, containing color formatting tags
+     * @return A formatted Message object ready to be sent to players
      */
-    private static Color extractColorFromTags(String text) {
+    public static Message parse(String text) {
+        if (!text.contains("<")) {
+            return Message.raw(text);
+        }
+        
+        Message root = Message.empty();
+        
+        // Stack keeps track of nested styles.
+        // Example: Stack = [Base, Red, Red+Bold]
+        Deque<ColorState> stateStack = new ArrayDeque<>();
+        stateStack.push(new ColorState()); // Start with default empty state
+        
         Matcher matcher = TAG_PATTERN.matcher(text);
+        int lastIndex = 0;
         
         while (matcher.find()) {
-            String tagContent = matcher.group(1);
+            int start = matcher.start();
+            int end = matcher.end();
             
-            // Handle hex colors: <#FF0000>
-            if (tagContent.startsWith("#")) {
-                String hex = tagContent.substring(1);
-                Color color = ColorUtils.parseHexColor(hex);
-                if (color != null) {
-                    return color;
-                }
+            // Handle text BEFORE this tag (using the state at the top of the stack)
+            if (start > lastIndex) {
+                String content = text.substring(lastIndex, start);
+                Message segmentMsg = createStyledMessage(content, stateStack.peek());
+                root.insert(segmentMsg);
             }
             
-            // Handle named colors: <red>, <blue>, etc.
-            // Check if it's a color name (not a closing tag or other tag)
-            if (!tagContent.startsWith("/") && !tagContent.contains(":")) {
-                Color color = ColorUtils.getNamedColor(tagContent);
-                if (color != null) {
-                    return color;
+            // Process the tag to update the Stack
+            boolean isClosing = "/".equals(matcher.group(1));
+            String tagName = matcher.group(2).toLowerCase();
+            String tagArg = matcher.group(3);
+            
+            if (isClosing) {
+                if (stateStack.size() > 1) {
+                    stateStack.pop();
                 }
+            } else {
+                // Start with the current state, and modify it
+                ColorState currentState = stateStack.peek();
+                ColorState newState = currentState.copy();
+                
+                // Check named colors directly
+                Color namedColor = ColorUtils.getNamedColor(tagName);
+                if (namedColor != null) {
+                    newState = newState.withColor(namedColor);
+                } else {
+                    // Handle color:arg format: <color:#FF0000> or <color:red>
+                    if ("color".equals(tagName) || "c".equals(tagName) || "colour".equals(tagName)) {
+                        if (tagArg != null) {
+                            Color c = parseColorArg(tagArg);
+                            if (c != null) {
+                                newState = newState.withColor(c);
+                            }
+                        }
+                    } else if (tagName.startsWith("#")) {
+                        // Handle hex colors: <#FF0000>
+                        Color c = ColorUtils.parseHexColor(tagName.substring(1));
+                        if (c != null) {
+                            newState = newState.withColor(c);
+                        }
+                    } else if ("reset".equals(tagName) || "r".equals(tagName)) {
+                        stateStack.clear();
+                        newState = new ColorState();
+                    }
+                }
+                stateStack.push(newState);
+            }
+            
+            lastIndex = end;
+        }
+        
+        // Handle remaining text after last tag
+        if (lastIndex < text.length()) {
+            String content = text.substring(lastIndex);
+            Message segmentMsg = createStyledMessage(content, stateStack.peek());
+            root.insert(segmentMsg);
+        }
+        
+        return root;
+    }
+    
+    /**
+     * Creates a Message with the current style state applied.
+     * 
+     * @param content The text content
+     * @param state The color state to apply
+     * @return A Message with the style applied
+     */
+    private static Message createStyledMessage(String content, ColorState state) {
+        if (content == null || content.isEmpty()) {
+            content = "";
+        }
+        
+        Message msg = Message.raw(content);
+        
+        if (state != null && state.color != null) {
+            msg = msg.color(state.color);
+        }
+        
+        return msg;
+    }
+    
+    /**
+     * Parses a color from an argument string (named color or hex).
+     * 
+     * @param arg The color argument (e.g., "red", "#FF0000", "FF0000")
+     * @return The Color object, or null if invalid
+     */
+    private static Color parseColorArg(String arg) {
+        if (arg == null) {
+            return null;
+        }
+        
+        // Try named color first
+        Color namedColor = ColorUtils.getNamedColor(arg);
+        if (namedColor != null) {
+            return namedColor;
+        }
+        
+        // Try hex color
+        return ColorUtils.parseHexColor(arg);
+    }
+    
+    /**
+     * Converts legacy & color codes to color tags for parsing.
+     * 
+     * @param text The text with legacy color codes
+     * @return Text with color tags
+     */
+    private static String convertLegacyCodesToTags(String text) {
+        StringBuilder result = new StringBuilder();
+        char[] chars = text.toCharArray();
+        
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '&' && i + 1 < chars.length) {
+                char code = Character.toLowerCase(chars[i + 1]);
+                
+                if (ColorUtils.isColorCode(code)) {
+                    Color color = ColorUtils.getColorForCode(code);
+                    if (color != null) {
+                        // Find the color name
+                        String colorName = findColorName(color);
+                        if (colorName != null) {
+                            result.append("<").append(colorName).append(">");
+                        }
+                    }
+                    i++; // Skip the code character
+                } else if (code == 'r') {
+                    // Reset code
+                    result.append("<reset>");
+                    i++; // Skip the code character
+                } else {
+                    // Unknown code, keep as-is
+                    result.append(chars[i]);
+                }
+            } else {
+                result.append(chars[i]);
+            }
+        }
+        
+        return result.toString();
+    }
+    
+    /**
+     * Finds the name of a color by matching it to known colors.
+     * 
+     * @param color The color to find
+     * @return The color name, or null if not found
+     */
+    private static String findColorName(Color color) {
+        if (color == null) {
+            return null;
+        }
+        
+        // Check all named colors
+        String[] colorNames = {"black", "dark_blue", "dark_green", "dark_aqua", "dark_red", 
+                              "dark_purple", "gold", "gray", "dark_gray", "blue", "green", 
+                              "aqua", "red", "light_purple", "yellow", "white"};
+        
+        for (String name : colorNames) {
+            Color namedColor = ColorUtils.getNamedColor(name);
+            if (namedColor != null && colorsMatch(color, namedColor)) {
+                return name;
             }
         }
         
         return null;
+    }
+    
+    /**
+     * Checks if two colors match exactly.
+     */
+    private static boolean colorsMatch(Color c1, Color c2) {
+        if (c1 == null || c2 == null) {
+            return false;
+        }
+        return c1.getRed() == c2.getRed() && 
+               c1.getGreen() == c2.getGreen() && 
+               c1.getBlue() == c2.getBlue();
     }
     
     /**
@@ -110,38 +297,6 @@ public class MessageFormatter {
     private static String stripTags(String text) {
         // Remove all tags: <tag> and </tag>
         return text.replaceAll("<[^>]+>", "");
-    }
-    
-    /**
-     * Parses legacy & color codes (e.g., &a, &c, &l).
-     * 
-     * @param text The text with legacy color codes
-     * @return Message with color applied
-     */
-    private static Message parseLegacyColorCodes(String text) {
-        // Extract plain text
-        String plainText = ColorUtils.stripColorCodes(text);
-        
-        // Find the first color code
-        Color color = null;
-        char[] chars = text.toCharArray();
-        for (int i = 0; i < chars.length - 1; i++) {
-            if (chars[i] == '&' && ColorUtils.isColorCode(chars[i + 1])) {
-                color = ColorUtils.getColorForCode(chars[i + 1]);
-                break; // Use first color found
-            }
-        }
-        
-        Message message = Message.raw(plainText);
-        if (color != null) {
-            try {
-                message = message.color(color);
-            } catch (Exception e) {
-                Logger.warning("Failed to apply legacy color: " + e.getMessage());
-            }
-        }
-        
-        return message;
     }
     
     /**
