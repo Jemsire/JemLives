@@ -1,236 +1,160 @@
-# JemDeaths
+# JemLives
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Jemsire/JemDeaths)
-![GitHub stars](https://img.shields.io/github/stars/Jemsire/JemDeaths?style=social)
-![GitHub issues](https://img.shields.io/github/issues/Jemsire/JemDeaths)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/Jemsire/JemDeaths)
-![GitHub license](https://img.shields.io/github/license/Jemsire/JemDeaths)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Jemsire/JemLives)
+![GitHub stars](https://img.shields.io/github/stars/Jemsire/JemLives?style=social)
+![GitHub issues](https://img.shields.io/github/issues/Jemsire/JemLives)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Jemsire/JemLives)
+![GitHub license](https://img.shields.io/github/license/Jemsire/JemLives)
 
-A Hytale server plugin that displays death messages in chat when players die. The plugin broadcasts death information to all players (or just the deceased player) and sends the death position to the player who died.
+A Hytale server plugin that implements a limited lives system. Players start with a set amount of lives and lose them upon death. Once they run out of lives, they are penalized (e.g., kicked) until their lives regenerate.
 
 ## Features
 
-- **Death Message Broadcasting**: Displays death messages in chat with the format "Playername was killed by [cause]"
-- **Configurable Display**: Choose whether to show death messages in chat and whether to broadcast to all players or just the deceased player
-- **Death Position Tracking**: Automatically sends the player's death position coordinates after they die
-- **Hot Reload**: Reload configuration without restarting the server using `/jemdeaths-reload`
-- **Simple Configuration**: Easy-to-use configuration file with sensible defaults
+- **Limited Lives System**: Players start with a configurable number of lives (fixed or randomized).
+- **Life Loss on Death**: Players lose a life when they die. Configurable to trigger on all deaths or PVP deaths only.
+- **PVP Rewards**: Optional chance to gain a life when killing another player.
+- **Lives Regeneration**: Automatically restores lives after a configurable cooldown period.
+- **Enhanced Death Messages**: Broadcasts death messages globally with the player's remaining life count.
+- **Local Notifications**: Sends private messages to players upon death with their current status.
+- **Rich Text Support**: Fully customizable messages with colors, gradients, and styles via TinyMsg.
+- **Hot Reload**: Reload configuration without restarting the server using `/jemlives reload`.
 
 ## Installation
 
-1. Download the latest release from the [releases page](https://github.com/jemsire/JemDeaths/releases)
-2. Place the `JemDeaths-x.x.x.jar` file into your Hytale server's `mods` folder
+1. Download the latest release from the [releases page](https://github.com/jemsire/JemLives/releases)
+2. Place the `JemLives-x.x.x.jar` file into your Hytale server's `mods` folder
 3. Start your server to generate the configuration file
-4. (Optional) Edit the `Jemsire_JemDeaths/DeathConfig.json` file to customize settings
-5. In-game type `/jemdeaths-reload` to reload the config if you made changes
+4. (Optional) Edit the `Jemsire_JemLives/LivesConfig.json` file to customize settings
+5. In-game type `/jemlives reload` to reload the config if you made changes
 
 ## Configuration
 
-After first launch, a configuration file will be created at `Jemsire_JemDeaths/DeathConfig.json`:
+After first launch, a configuration file will be created at `Jemsire_JemLives/LivesConfig.json`:
 
 ```json
 {
-  "ShowDeathMessage": true,
-  "ShowPosition": true,
-  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
-  "DeathCauseReplacement": "was"
+  "InitialLivesMin": 3,
+  "InitialLivesMax": 3,
+  "LoseLivesFromPvpOnly": false,
+  "GainLivesFromKills": false,
+  "GainLifeChance": 0.1,
+  "ZeroLivesAction": "KICK",
+  "RegenTimeMinutes": 60,
+  "LogLevel": "INFO",
+  "DeathAnnouncementFormat": "<orange>{player} <red>has died and now has <orange>{lives} <red>lives.",
+  "LocalDeathMessage": "<red>You died! You have <orange>{lives} <red>lives left.",
+  "LivesCommandMessage": "<green>You have {lives} lives left.",
+  "KickMessage": "You have run out of lives! Come back in {time}.",
+  "DeathCauseReplacement": "was",
+  "ShowLivesHud": true,
+  "HudIconPath": "Hud/Essense.gif"
 }
 ```
 
 ### Configuration Options
 
-- **ShowDeathMessage** (default: `true`): Enable sending the death message to everyone
-  - When `true`: Death message is broadcast to all online players
-  - When `false`: Death messages are disabled
+- **InitialLivesMin** / **InitialLivesMax**: The range for starting lives. If they are equal, players start with that fixed amount.
+- **LoseLivesFromPvpOnly**: If `true`, players only lose lives when killed by another player.
+- **GainLivesFromKills**: If `true`, players have a chance to gain a life when they kill another player.
+- **GainLifeChance**: The probability (0.0 to 1.0) of gaining a life on a PVP kill.
+- **ZeroLivesAction**: Action taken when a player reaches 0 lives (e.g., `KICK`).
+- **RegenTimeMinutes**: Time in minutes before a player's lives are restored after reaching zero.
+- **LogLevel**: Logging level for the plugin (`INFO`, `DEBUG`, `WARN`, `SEVERE`).
+- **DeathAnnouncementFormat**: Format for the global death message.
+  - Placeholders: `{player}`, `{playerName}`, `{deathCause}`, `{rawDeathCause}`, `{lives}`
+- **LocalDeathMessage**: Private message sent to the player who died.
+- **LivesCommandMessage**: Message shown when a player uses the `/lives` command.
+- **KickMessage**: Message shown when a player is kicked for having 0 lives.
+  - Placeholders: `{time}` (remaining time until regen)
+- **DeathCauseReplacement**: Replaces "You were" in the default Hytale death messages.
+- **ShowLivesHud**: If `true`, shows the lives HUD near the hotbar.
+- **HudIconPath**: Path to the icon image, relative to `Common/UI/Custom/` (e.g. `"Hud/Essense.gif"` or `"JemLives/heart.png"`).
 
-- **ShowPosition** (default: `true`): Enable sending the position of the player's death to the player only
-  - When `true`: The player receives a private message with their death coordinates
-  - When `false`: Position notification is disabled
+### Using images in the HUD
 
-- **DeathAnnouncementFormat** (default: `"{player} {deathCause}"`): Customize the format of the death announcement message
-  - Supports placeholders: `{player}`, `{playerName}`, `{deathCause}`, `{rawDeathCause}`, `{position}`, `{x}`, `{y}`, `{z}`
-  - Example: `"[DEATH] {player} died: {deathCause}"` or `"Cant believe {player} {deathCause}"`
+Images in Hytale UI use a **Group** with **Background: PatchStyle(TexturePath: "path")**. The path is relative to your plugin’s `Common/UI/Custom/` folder (same place as `.ui` files).
 
-- **DeathLocationFormat** (default: `"<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}"`): Customize the format of the death location message sent to the player
-  - Supports placeholders: `{player}`, `{playerName}`, `{deathCause}`, `{rawDeathCause}`, `{position}`, `{x}`, `{y}`, `{z}`
-  - Example: `"Your death location: {x}, {y}, {z}"` or `"Died at: {position}"`
+1. **Add your image**  
+   Put your PNG or GIF (e.g. `Essense.gif`) in `src/main/resources/Common/UI/Custom/Hud/` (or a subfolder). It will be bundled in the plugin JAR.
 
-- **DeathCauseReplacement** (default: `"was"`): What to replace "You were" with in the death cause
-  - The game's death message typically starts with "You were", this setting replaces it
-  - Example: `"was"` (default), `"got"`, `"perished from"`, etc.
+2. **Reference it in the .ui file**  
+   In a `.ui` file, use:
+   ```
+   Group #hudIcon {
+     Anchor: (Width: 32, Height: 32);
+     Background: PatchStyle(TexturePath: "Hud/Essense.gif", Border: 0);
+   }
+   ```
+   `Border: 0` stretches the image to the Anchor size. Use a positive `Border` (e.g. `12`) for 9-slice scaling.
+
+3. **Config**  
+   Set **HudIconPath** to the path relative to `Common/UI/Custom/` (e.g. `"Hud/Essense.gif"` or `"JemLives/heart.png"`). The default icon path is `Hud/Essense.gif`.
 
 ### Color Formatting
 
-Both `DeathAnnouncementFormat` and `DeathLocationFormat` support **advanced color formatting** using tags or legacy color codes. The plugin uses TinyMsg for rich text formatting with colors, gradients, styles, and links.
+All message strings support **advanced color formatting** using tags or legacy color codes. The plugin uses TinyMsg for rich text formatting.
 
 **Supported Color Formats:**
-- **Named Color Tags**: `<red>`, `<blue>`, `<green>`, `<yellow>`, `<gold>`, etc.
-- **Hex Color Tags**: `<color:#FF0000>` or `<#FF0000>` for custom colors
-- **Legacy Color Codes**: `&a`, `&c`, `&e`, etc. (Minecraft/Hytale style)
-
-**Available Named Colors:**
-- `black`, `dark_blue`, `dark_green`, `dark_aqua`, `dark_red`, `dark_purple`
-- `gold`, `gray`, `dark_gray`, `blue`, `green`, `aqua`
-- `red`, `light_purple`, `yellow`, `white`
+- **Named Color Tags**: `<red>`, `<blue>`, `<green>`, `<yellow>`, `<gold>`, `<orange>`, etc.
+- **Hex Color Tags**: `<color:#FF0000>` or `<#FF0000>`
+- **Legacy Color Codes**: `&a`, `&c`, `&e`, etc.
 
 **Advanced Formatting Features:**
 - **Gradients**: `<gradient:#FF0000:#00FF00>Rainbow text</gradient>`
 - **Text Styles**: `<bold>`, `<italic>`, `<underline>`, `<monospace>`
-- **Links**: `<link:https://example.com>Click me</link>`
-- **Combined**: `<bold><red>Bold Red Text</red></bold>`
-
-**Examples:**
-```json
-{
-  "DeathAnnouncementFormat": "<red>{player} <gray>{deathCause}</gray>",
-  "DeathLocationFormat": "<gold>Your last death position: <#00FF00>X:{x} Y:{y} Z:{z}</#00FF00>"
-}
-```
-
-Or using legacy codes:
-```json
-{
-  "DeathAnnouncementFormat": "&c{player} &7{deathCause}",
-  "DeathLocationFormat": "&6Your last death position: &aX:{x} Y:{y} Z:{z}"
-}
-```
-
-Advanced example with gradients and styles:
-```json
-{
-  "DeathAnnouncementFormat": "<bold><gradient:#FF0000:#00FF00>{player}</gradient></bold> <italic>{deathCause}</italic>",
-  "DeathLocationFormat": "<gold><bold>Your last death position:</bold> <underline>X:{x} Y:{y} Z:{z}</underline></gold>"
-}
-```
-
-### Available Placeholders
-
-Placeholders can be used in both `DeathAnnouncementFormat` and `DeathLocationFormat`:
-
-- `{player}` or `{playerName}` - The player's display name
-- `{deathCause}` - The formatted death cause (with "You were" replaced)
-- `{rawDeathCause}` - The original death cause without replacement
-- `{position}` - Full position as "x, y, z" (e.g., "123.4, 64.0, -567.8")
-- `{x}` - X coordinate only (e.g., "123.4")
-- `{y}` - Y coordinate only (e.g., "64.0")
-- `{z}` - Z coordinate only (e.g., "-567.8")
-
-### Example Configurations
-
-**Default configuration:**
-```json
-{
-  "ShowDeathMessage": true,
-  "ShowPosition": true,
-  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
-  "DeathCauseReplacement": "was"
-}
-```
-
-**Custom formatted messages:**
-```json
-{
-  "ShowDeathMessage": true,
-  "ShowPosition": true,
-  "DeathAnnouncementFormat": "Cant believe {player} {deathCause}",
-  "DeathLocationFormat": "Your death location: X:{x} Y:{y} Z:{z}",
-  "DeathCauseReplacement": "got"
-}
-```
-
-**Disable death messages (only position notification):**
-```json
-{
-  "ShowDeathMessage": false,
-  "ShowPosition": true,
-  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
-  "DeathCauseReplacement": "was"
-}
-```
-
-**Disable position notification (only death messages):**
-```json
-{
-  "ShowDeathMessage": true,
-  "ShowPosition": false,
-  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
-  "DeathCauseReplacement": "was"
-}
-```
-
-**Disable everything:**
-```json
-{
-  "ShowDeathMessage": false,
-  "ShowPosition": false,
-  "DeathAnnouncementFormat": "<red>{player} {deathCause}",
-  "DeathLocationFormat": "<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}",
-  "DeathCauseReplacement": "was"
-}
-```
-
-## How It Works
-
-### Death Message Format
-
-When a player dies, the plugin displays a message in chat using the configured format (default: `"{player} {deathCause}"`).
-
-For example with default settings:
-- `Steve was killed by Zombie`
-- `Alex was killed by fall damage`
-- `Bob was killed by Creeper`
-
-You can customize this format using the `DeathAnnouncementFormat` option with placeholders.
-
-### Death Position Notification
-
-After a player dies, they receive a private message with their death coordinates using the configured format (default: `"<gold>Your last death position: <white>X:{x} Y:{y} Z:{z}"`).
-
-Example with default settings:
-```
-Your last death position: X:123.4 Y:64.0 Z:-567.8
-```
-
-You can customize this format using the `DeathLocationFormat` option with placeholders. This helps players find their death location to retrieve items.
-
-## Screenshots
-
-### Configuration File
-![Configuration File](assets/images/ConfigFile.png)
-
-### In-Game Chat Example
-![Chat Example](assets/images/ChatExample.png)
 
 ## Commands
 
-- `/jemdeaths-reload` - Reloads the plugin configuration without restarting the server
-  - **Permission**: `jemdeaths.reload`
-  - **Usage**: Use this command after modifying `DeathConfig.json` to apply changes
+- `/lives` - Check your remaining lives (same as `/jemlives check`)
+- `/jemlives check` - Check your remaining lives
+- `/jemlives info` - Open the lives info UI
+- `/jemlives reload` - Reload the plugin configuration (admin)
+
+### Permissions
+
+| Permission       | Description                                      |
+|------------------|--------------------------------------------------|
+| `jemlives.check` | Use `/lives` and `/jemlives check`               |
+| `jemlives.info`  | Use `/jemlives info` (open lives info page)      |
+| `jemlives.reload` | Use `/jemlives reload` (reload config)        |
+
+If a player lacks the required permission, they see a red "You do not have permission to perform this command!" message.
 
 ## Project Structure
 
 ```
-JemDeaths/
+JemLives/
 ├── src/main/java/com/jemsire/
 │   ├── commands/
-│   │   └── ReloadCommand.java           # Command handler for /jemdeaths-reload
+│   │   └── LivesCommand.java            # Command handler for /lives and /jemlives
 │   ├── config/
-│   │   └── DeathConfig.java             # Death message configuration data class
+│   │   ├── LivesConfig.java             # Lives system configuration
+│   │   └── PlayerData.java              # Player data model
 │   ├── events/
-│   │   └── OnPlayerDeathEvent.java      # Handles player death events
+│   │   ├── OnPlayerConnectEvent.java    # Handles player connection
+│   │   ├── OnPlayerDeathEvent.java      # Handles player death and life loss
+│   │   ├── OnPlayerLeaveEvent.java      # Handles player disconnection
+│   │   └── OnPlayerReadyEvent.java      # Handles player readiness
 │   ├── plugin/
-│   │   └── JemDeaths.java               # Main plugin class
+│   │   └── JemLives.java                # Main plugin class
+│   ├── ui/
+│   │   ├── LivesHud.java                # Custom HUD implementation
+│   │   └── LivesInfoPage.java           # Custom info page UI
 │   └── utils/
+│       ├── LivesManager.java            # Manages player lives data and persistence
+│       ├── LivesHudManager.java         # Manages HUD lifecycle
+│       ├── KickManager.java             # Manages player kicks/regeneration
 │       ├── ChatBroadcaster.java         # Utility for broadcasting messages
-│       ├── ColorUtils.java               # Color code parsing and conversion utilities
-│       ├── Logger.java                   # Logging utility
-│       ├── TinyMsg.java                  # Advanced message formatting with colors, gradients, styles, and links
-│       └── PlaceholderReplacer.java      # Placeholder replacement utility
+│       ├── ColorUtils.java              # Color parsing utilities
+│       ├── Logger.java                  # Logging utility
+│       ├── TinyMsg.java                 # Advanced message formatting
+│       └── PlaceholderReplacer.java     # Placeholder replacement utility
 ├── src/main/resources/
+│   ├── Common/UI/Custom/
+│   │   └── Hud/
+│   │       ├── lives_hud.ui             # HUD layout
+│   │       ├── LivesInfoPage.ui         # Info page layout
+│   │       └── Essense.gif               # HUD icon
 │   └── manifest.json                    # Plugin metadata
 ├── build.gradle.kts                     # Gradle build configuration
 └── settings.gradle.kts                  # Gradle project settings
@@ -240,68 +164,34 @@ JemDeaths/
 
 ### Prerequisites
 
-- Java Development Kit (JDK) 25 or higher
+- Java Development Kit (JDK) 17/25
 - Gradle 8.0 or higher
 
 ### Build Steps
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/jemsire/JemDeaths.git
-   cd JemDeaths
+   git clone https://github.com/jemsire/JemLives.git
+   cd JemLives
    ```
 
-2. Ensure `HytaleServer.jar` is in the `libs/` directory
-
-3. Build the project:
+2. Build the project:
    ```bash
    ./gradlew build
    ```
 
-4. The compiled JAR will be in `build/libs/JemDeaths-x.x.x.jar`
+3. The compiled JAR will be in `build/libs/JemLives-x.x.x.jar`
 
 ## Technical Details
 
-### Dependencies
+### Data Persistence
+Player lives are stored in individual JSON files within the `players/` folder of the plugin directory (e.g., `mods/Jemsire_JemLives/players/882cf635-0575-4400-ac75-ccaeb0149521.json`). This ensures that data is persisted across server restarts and remains easily accessible for administrators.
 
-- **HytaleServer.jar**: Provided at compile time, required at runtime
-- **Java Standard Library**: Uses standard Java libraries only
+### Troubleshooting
 
-### Performance
-
-- **Non-Blocking**: All operations run synchronously on the main thread (death events are already handled by the server)
-- **Lightweight**: Minimal overhead, only processes death events
-- **Efficient**: Direct chat message sending without external API calls
-
-### Error Handling
-
-- Gracefully handles missing player references
-- Logs errors to server console if message sending fails
-- Continues operation even if position tracking fails
-
-## Troubleshooting
-
-### Death Messages Not Appearing
-
-1. **Check Configuration**: Verify that `ShowDeathMessage` is set to `true` in `DeathConfig.json`
-2. **Reload Config**: Use `/jemdeaths-reload` after making changes
-3. **Check Server Logs**: Look for error messages in the server console
-4. **Verify Permissions**: Ensure players have permission to receive chat messages
-
-### Position Not Showing
-
-1. **Check Server Logs**: Look for errors related to position tracking
-2. **Verify Transform Component**: The plugin requires the Transform component to be available
-3. **Check Player Reference**: Ensure the player is still online when the position is sent
-
-### Permission Errors
-
-- Ensure you have the `jemdeaths.reload` permission to use the reload command
-- Check your server's permission system configuration
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. **Check Configuration**: Verify `LivesConfig.json` exists in `Jemsire_JemLives/`.
+2. **Reload Config**: Use `/jemlives reload` after changes.
+3. **Check Server Logs**: Look for `[JemLives]` entries in the console.
 
 ## License
 
@@ -311,8 +201,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **TinyTank800**
 
-- Website: [https://jemsire.com/JemDeaths](https://jemsire.com/JemDeaths)
+- Website: [https://jemsire.com/JemLives](https://jemsire.com/JemLives)
 
 ## Support
 
-For issues, feature requests, or questions, please open an [Issue](https://github.com/jemsire/JemDeaths/issues).
+For issues, feature requests, or questions, please open an [Issue](https://github.com/jemsire/JemLives/issues).

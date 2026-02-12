@@ -1,0 +1,95 @@
+$C = "../Common.ui";
+
+Group {
+  LayoutMode: Top;
+  Anchor: (Width: 520, Height: 520);
+  Background: #141c26(0.96);
+  Padding: (Left: 32, Right: 32, Top: 28, Bottom: 28);
+
+  Label #Title {
+    Text: "Your Lives";
+    Anchor: (Height: 40);
+    Style: (FontSize: 26, TextColor: #ffffff, RenderBold: true, Alignment: Center);
+  }
+
+  Group { Anchor: (Height: 24); }
+
+  Group {
+    LayoutMode: Top;
+    Anchor: (Left: 0, Right: 0);
+    Padding: (Left: 20, Right: 20, Top: 20, Bottom: 20);
+    Background: #1a2332(0.6);
+
+    Label #LivesLabel {
+      Text: "Lives: 0";
+      Anchor: (Height: 28, Bottom: 6);
+      Style: (FontSize: 20, TextColor: #b8c5d6, RenderBold: true, Alignment: Center);
+    }
+
+    Label #RegenLabel {
+      Text: "";
+      Anchor: (Height: 24);
+      Style: (FontSize: 15, TextColor: #6e7da1, Alignment: Center);
+    }
+  }
+
+  Group { Anchor: (Height: 20); }
+
+  Group {
+    LayoutMode: Top;
+    Anchor: (Left: 0, Right: 0);
+    Padding: (Left: 20, Right: 20, Top: 18, Bottom: 18);
+    Background: #0f1620(0.7);
+
+    Label #HowItWorksTitle {
+      Text: "How it works";
+      Anchor: (Height: 26);
+      Style: (FontSize: 16, TextColor: #e8eef6, RenderBold: true, Alignment: Center);
+    }
+
+    Group { Anchor: (Height: 12); }
+
+    Label #ExplanationLine1 {
+      Text: "";
+      Anchor: (Height: 20);
+      Style: (TextColor: #a8b4c8, FontSize: 13);
+    }
+    Label #ExplanationLine2 {
+      Text: "";
+      Anchor: (Height: 20);
+      Style: (FontSize: 13, TextColor: #a8b4c8);
+    }
+    Label #ExplanationLine3 {
+      Text: "";
+      Anchor: (Height: 20);
+      Style: (FontSize: 13, TextColor: #a8b4c8);
+    }
+    Label #ExplanationLine4 {
+      Text: "";
+      Anchor: (Height: 20);
+      Style: (FontSize: 13, TextColor: #a8b4c8);
+    }
+    Label #ExplanationLine5 {
+      Text: "";
+      Anchor: (Height: 20);
+      Style: (FontSize: 13, TextColor: #a8b4c8);
+    }
+    Label #ExplanationLine6 {
+      Text: "";
+      Anchor: (Height: 20);
+      Style: (FontSize: 13, TextColor: #a8b4c8);
+    }
+  }
+
+  Group { Anchor: (Top: 24); FlexWeight: 1; }
+
+  Group {
+    LayoutMode: Center;
+    Anchor: (Height: 52);
+
+    $C.@SecondaryTextButton #CloseBtn {
+      @Text = "Close";
+      Anchor: (Width: 160, Height: 46);
+    }
+  }
+}

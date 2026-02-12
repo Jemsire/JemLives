@@ -3,9 +3,7 @@ package com.jemsire.utils;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
-import com.jemsire.plugin.JemDeaths;
-
-import java.awt.*;
+import com.jemsire.plugin.JemLives;
 
 /**
  * Utility class for broadcasting messages to players in chat.
@@ -19,7 +17,7 @@ public class ChatBroadcaster {
      */
     public static void broadcastToAll(String message) {
         try {
-            JemDeaths plugin = JemDeaths.get();
+            JemLives plugin = JemLives.get();
             if (plugin == null) {
                 Logger.warning("Plugin instance not available for broadcasting");
                 return;

@@ -1,18 +1,15 @@
 {
   "Group": "Jemsire",
-  "Name": "JemDeaths",
-  "Version": "1.0.1",
-  "Description": "Display death messages and position to player in chat when players die.",
-  "Authors": [
-    {
-      "Name": "TinyTank800"
-    }
-  ],
+  "Name": "JemLives",
+  "Version": "1.0.0",
+  "Description": "A limited lives plugin for Hytale.",
+  "Authors": [{"Name": "TinyTank800"}],
   "Website": "https://www.curseforge.com/members/jemsire/projects",
-  "ServerVersion": "*",
+  "Main": "com.jemsire.plugin.JemLives",
   "Dependencies": {},
-  "OptionalDependencies": {},
-  "DisabledByDefault": false,
-  "IncludesAssetPack": true,
-  "Main": "com.jemsire.plugin.JemDeaths"
+  "OptionalDependencies": {
+    "Jemsire:JemPlaceholders": "*"
+  },
+  "LoadOrder": "POSTWORLD",
+  "IncludesAssetPack": true
 }

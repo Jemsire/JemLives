@@ -1,2 +1,2 @@
-rootProject.name = "JemDeaths"
+rootProject.name = "JemLives"
 include("libs")

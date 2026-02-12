@@ -1,0 +1,5 @@
+Group #lifeIconsContainer {
+  LayoutMode: Center;
+  Anchor: (Top: 50, Height: 44);
+  Padding: (Left: 10, Right: 10);
+}

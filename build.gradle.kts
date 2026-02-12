@@ -2,6 +2,12 @@ plugins {
     id("java")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
 group = "com.jemsire"
 
 // Read version from manifest.json
@@ -20,10 +26,16 @@ project.version = version
 
 repositories {
     mavenCentral()
+    maven {
+        name = "hytale"
+        url = uri("https://maven.hytale.com/release") // Or "hytale-pre-release" for pre-release versions
+    }
 }
 
 dependencies {
-    compileOnly(files("libs/HytaleServer.jar"))
+    implementation("com.hypixel.hytale:Server:+")
+    compileOnly(files("libs/JemPlaceholders-1.0.0.jar"))
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
