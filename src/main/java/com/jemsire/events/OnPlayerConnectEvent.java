@@ -2,15 +2,10 @@ package com.jemsire.events;
 
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.jemsire.config.LivesConfig;
 import com.jemsire.plugin.JemLives;
-import com.jemsire.utils.ChatBroadcaster;
 import com.jemsire.utils.LivesManager;
 import com.jemsire.utils.Logger;
-import com.jemsire.utils.PlaceholderReplacer;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**

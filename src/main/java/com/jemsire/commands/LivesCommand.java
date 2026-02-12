@@ -69,7 +69,7 @@ public class LivesCommand extends AbstractCommandCollection {
         }
     }
 
-    class CheckCommand extends AbstractPlayerCommand {
+    static class CheckCommand extends AbstractPlayerCommand {
         CheckCommand() {
             super("check", "Check your remaining lives");
         }
@@ -95,7 +95,7 @@ public class LivesCommand extends AbstractCommandCollection {
         }
     }
 
-    class InfoCommand extends AbstractPlayerCommand {
+    static class InfoCommand extends AbstractPlayerCommand {
         InfoCommand() {
             super("info", "Open lives info UI");
         }
@@ -116,7 +116,7 @@ public class LivesCommand extends AbstractCommandCollection {
         }
     }
 
-    class ReloadSubCommand extends AbstractPlayerCommand {
+    static class ReloadSubCommand extends AbstractPlayerCommand {
         ReloadSubCommand() {
             super("reload", "Reload the config for JemLives");
         }

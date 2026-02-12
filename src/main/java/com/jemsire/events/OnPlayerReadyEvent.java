@@ -22,7 +22,6 @@ public class OnPlayerReadyEvent {
 
     public static void onPlayerReady(PlayerReadyEvent event) {
         Ref<EntityStore> ref = event.getPlayerRef();
-        if (ref == null) return;
 
         JemLives plugin = JemLives.get();
         if (plugin == null) return;

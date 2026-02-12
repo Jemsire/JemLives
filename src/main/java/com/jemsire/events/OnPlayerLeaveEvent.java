@@ -1,8 +1,6 @@
 package com.jemsire.events;
 
-import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.jemsire.plugin.JemLives;
 import com.jemsire.utils.Logger;
 
