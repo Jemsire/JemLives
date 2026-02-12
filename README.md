@@ -19,7 +19,7 @@ A Hytale server plugin that implements a limited lives system. Players start wit
 
 - **Limited Lives System**: Players start with a configurable number of lives (fixed or randomized).
 - **Life Loss on Death**: Players lose a life when they die. Configurable to trigger on all deaths or PVP deaths only.
-- **PVP Rewards**: Optional chance to gain a life when killing another player.
+- **PVP Rewards**[Unfinished]: Optional chance to gain a life when killing another player.
 - **Lives Regeneration**: Automatically restores lives after a configurable cooldown period.
 - **Enhanced Death Messages**: Broadcasts death messages globally with the player's remaining life count.
 - **Local Notifications**: Sends private messages to players upon death with their current status.
@@ -61,9 +61,9 @@ After first launch, a configuration file will be created at `Jemsire_JemLives/Li
 ### Configuration Options
 
 - **InitialLivesMin** / **InitialLivesMax**: The range for starting lives. If they are equal, players start with that fixed amount.
-- **LoseLivesFromPvpOnly**: If `true`, players only lose lives when killed by another player.
-- **GainLivesFromKills**: If `true`, players have a chance to gain a life when they kill another player.
-- **GainLifeChance**: The probability (0.0 to 1.0) of gaining a life on a PVP kill.
+- **LoseLivesFromPvpOnly**[Unfinished]: If `true`, players only lose lives when killed by another player.
+- **GainLivesFromKills**[Unfinished]: If `true`, players have a chance to gain a life when they kill another player.
+- **GainLifeChance**[Unfinished]: The probability (0.0 to 1.0) of gaining a life on a PVP kill.
 - **ZeroLivesAction**: Action taken when a player reaches 0 lives (e.g., `KICK`).
 - **RegenTimeMinutes**: Time in minutes before a player's lives are restored after reaching zero.
 - **LogLevel**: Logging level for the plugin (`INFO`, `DEBUG`, `WARN`, `SEVERE`).
@@ -82,7 +82,9 @@ After first launch, a configuration file will be created at `Jemsire_JemLives/Li
 Images in Hytale UI use a **Group** with **Background: PatchStyle(TexturePath: "path")**. The path is relative to your plugin’s `Common/UI/Custom/` folder (same place as `.ui` files).
 
 1. **Add your image**  
-   Put your PNG or GIF (e.g. `Essense.gif`) in `src/main/resources/Common/UI/Custom/Hud/` (or a subfolder). It will be bundled in the plugin JAR.
+   *Sadly .gif is not supported that I have found*
+
+   Put your PNG (e.g. `Essense.png`) in `src/main/resources/Common/UI/Custom/Hud/` (or a subfolder). It will be bundled in the plugin JAR.
 
 2. **Reference it in the .ui file**  
    In a `.ui` file, use:
