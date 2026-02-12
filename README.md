@@ -8,6 +8,13 @@
 
 A Hytale server plugin that implements a limited lives system. Players start with a set amount of lives and lose them upon death. Once they run out of lives, they are penalized (e.g., kicked) until their lives regenerate.
 
+---
+
+# BETA!!!! - Not a ton of testing just yet and unfinished features!
+*Use at your own risk!*
+
+---
+
 ## Features
 
 - **Limited Lives System**: Players start with a configurable number of lives (fixed or randomized).
