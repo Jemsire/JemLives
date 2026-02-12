@@ -24,6 +24,7 @@ public class LivesConfig {
     private String deathCauseReplacement = "was";
     private boolean showLivesHud = true;
     private String hudIconPath = "Hud/lives_icon.png";
+    private boolean updateCheck = true;
 
     public LivesConfig() {
     }
@@ -105,6 +106,11 @@ public class LivesConfig {
                             (config, value, info) -> config.hudIconPath = value != null && !value.isEmpty() ? value : "Hud/lives_icon.png",
                             (config, info) -> config.hudIconPath
                     ).add()
+                    .append(
+                            new KeyedCodec<Boolean>("UpdateCheck", Codec.BOOLEAN),
+                            (config, value, info) -> config.updateCheck =  value != null ? value : true,
+                            (config, info) -> config.updateCheck
+                    ).add()
                     .build();
 
     public int getInitialLivesMin() { return initialLivesMin; }
@@ -122,4 +128,5 @@ public class LivesConfig {
     public String getDeathCauseReplacement() { return deathCauseReplacement; }
     public boolean isShowLivesHud() { return showLivesHud; }
     public String getHudIconPath() { return hudIconPath; }
+    public Boolean getUpdateCheck() { return updateCheck; }
 }

@@ -1,5 +1,6 @@
 package com.jemsire.plugin;
 
+import com.hypixel.hytale.common.semver.Semver;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
@@ -17,16 +18,15 @@ import com.jemsire.events.OnPlayerLeaveEvent;
 import com.jemsire.events.OnPlayerReadyEvent;
 import com.jemsire.expansion.JemLivesExpansion;
 import com.jemsire.jemplaceholders.api.JemPlaceholdersAPI;
-import com.jemsire.utils.KickManager;
-import com.jemsire.utils.LivesHudManager;
-import com.jemsire.utils.LivesManager;
-import com.jemsire.utils.Logger;
+import com.jemsire.utils.*;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class JemLives extends JavaPlugin {
     private static JemLives instance;
+
+    private final Semver version;
 
     public static JemLives get() {
         return instance;
@@ -41,6 +41,8 @@ public class JemLives extends JavaPlugin {
         super(init);
         instance = this;
         Logger.info("Starting JemLives Plugin...");
+
+        version = init.getPluginManifest().getVersion();
 
         this.livesConfig = this.withConfig("LivesConfig", LivesConfig.CODEC);
         this.livesManager = new LivesManager();
@@ -66,6 +68,10 @@ public class JemLives extends JavaPlugin {
     protected void start() {
         if (isJemPlaceholdersEnabled()) {
             JemPlaceholdersAPI.registerExpansion(new JemLivesExpansion());
+        }
+
+        if(livesConfig.get().getUpdateCheck()){
+            new UpdateChecker(version.toString()).checkForUpdatesAsync();
         }
 
         Logger.info("[JemLives] Started!");
